@@ -3,19 +3,19 @@
 Use as caixas para marcar conclusão das tarefas. Ordem sugerida, podendo paralelizar onde fizer sentido.
 
 ## 1) Infra / Monorepo
-- [ ] Criar Turborepo com `apps/api`, `apps/web`, `packages/config`, `packages/core`, `packages/ui`.
-- [ ] Adicionar `turbo.json` e `package.json` raiz com workspaces e scripts `dev`, `dev:api`, `dev:web`, `build`, `lint`, `test`.
-- [ ] Configurar `packages/config`: `tsconfig.base`, ESLint, Prettier, Tailwind base.
-- [ ] Configurar `packages/core`: tipos de domínio compartilhados (derivados das specs).
-- [ ] Configurar `packages/ui`: componentes base (shadcn) reutilizáveis.
+- [x] Criar Turborepo com `apps/api`, `apps/web`, `packages/config`, `packages/core`, `packages/ui`.
+- [x] Adicionar `turbo.json` e `package.json` raiz com workspaces e scripts `dev`, `dev:api`, `dev:web`, `build`, `lint`, `test`.
+- [x] Configurar `packages/config`: `tsconfig.base`, ESLint, Prettier, Tailwind base.
+- [x] Configurar `packages/core`: tipos de domínio compartilhados (derivados das specs).
+- [x] Configurar `packages/ui`: componentes base (shadcn) reutilizáveis.
 
 ## 2) Backend Setup (apps/api)
-- [ ] Inicializar Fastify + TypeScript + Zod + Prisma.
-- [ ] Criar `.env` exemplo e `docker-compose.yml` (MySQL + API).
-- [ ] Definir `schema.prisma` cobrindo entidades dos domain specs.
+- [x] Inicializar Fastify + TypeScript + Zod + Prisma.
+- [x] Criar `.env` exemplo e `docker-compose.yml` (MySQL + API).
+- [x] Definir `schema.prisma` cobrindo entidades dos domain specs.
 - [ ] Gerar migrations e Prisma Client (`prisma migrate dev`, `prisma generate`).
-- [ ] Middlewares: logger, error handler, auth JWT, RBAC simples.
-- [ ] Seeds iniciais: etapas de oportunidades, etapas de migração, perfil admin, usuário admin.
+- [x] Middlewares: logger, error handler, auth JWT, RBAC simples (auth plugin registrado; RBAC detalhar por rota ainda pendente).
+- [x] Seeds iniciais: etapas de oportunidades, perfil admin, usuário admin (prisma/seed.ts). Migração etapas ainda pendente.
 
 ## 3) Auth & RBAC
 - [ ] Implementar modelos `UsuarioInterno`, `UsuarioCliente`, `Papel`.
@@ -24,9 +24,9 @@ Use as caixas para marcar conclusão das tarefas. Ordem sugerida, podendo parale
 - [ ] Proteções básicas: rate limit em login, expiração de token.
 
 ## 4) Vertical Slice 1 — CRM
-- [ ] Endpoints Leads: CRUD, notas, arquivos, converter para cliente.
+- [x] Endpoints Leads: CRUD (básico). Notas/arquivos e converter para cliente pendentes.
 - [ ] Endpoints Oportunidades: criar/listar (kanban), mudar etapa, histórico.
-- [ ] Validações (Zod) conforme specs; paginação em listas.
+- [ ] Validações (Zod) conforme specs; paginação em listas (parcial).
 - [ ] Hooks React Query: `useLeads`, `useOportunidades`; telas Next (lista, formulário, kanban).
 
 ## 5) Vertical Slice 2 — Clientes & UCs
@@ -66,7 +66,7 @@ Use as caixas para marcar conclusão das tarefas. Ordem sugerida, podendo parale
 ## 11) Portal do Cliente
 - [ ] Endpoints portal: dashboard, relatórios, documentos.
 - [ ] Hooks portal (`usePortalDashboard`, `usePortalRelatorios`, `usePortalDocumentos`).
-- [ ] Telas portal: login, dashboard, relatórios, documentos.
+- [ ] Telas portal: login, dashboard, relatórios, documentos. (login/Dashboard esqueleto criados)
 
 ## 12) Alertas, Notificações e Auditoria
 - [ ] Registrar `LogAuditoria` em CRUD críticos.
