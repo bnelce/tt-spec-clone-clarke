@@ -73,7 +73,8 @@ Use as caixas para marcar conclusão das tarefas. Ordem sugerida, podendo parale
 ## 12) Alertas, Notificações e Auditoria
 - [x] Registrar `LogAuditoria` em CRUD de leads/clientes/UCs/contratos/faturas/migrações/honorários.
 - [x] Notificações automáticas: contrato a vencer e migração atrasada + listagem `/notificacoes`.
-- [ ] Expandir notificações (exposição alta, fatura ausente) + UI/badge no app.
+- [ ] Expandir notificações (exposição alta, fatura ausente) e permitir marcar como lida via API (parcial).
+- [x] Badge/visualização no app interno (Topbar + página `/alertas`).
 
 ## 13) UI/UX e Componentes
 - [x] Layout interno inicial (sidebar/topbar) e páginas base.
@@ -100,4 +101,4 @@ Use as caixas para marcar conclusão das tarefas. Ordem sugerida, podendo parale
 ## 17) DevOps local
 - [ ] Validar `docker-compose up` (MySQL + API).
 - [ ] Scripts `dev` (api+web), `build`, `lint`, `test`.
-- [ ] README com instruções de setup, env vars e comandos.
+- [x] README com instruções de setup, env vars e comandos.
