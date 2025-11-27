@@ -42,13 +42,14 @@ Use as caixas para marcar conclusão das tarefas. Ordem sugerida, podendo parale
 - [ ] Hooks `useAnalises`; telas para input/upload e visualização (gráficos).
 
 ## 7) Vertical Slice 4 — Propostas & Contratos de Energia
-- [ ] Endpoints Propostas: CRUD, seleção de proposta.
-- [ ] Comparador (API + resposta consolidada).
-- [ ] Endpoints Contratos Energia: CRUD, arquivos.
+- [x] Endpoints Comercializadoras: CRUD.
+- [x] Endpoints Propostas: CRUD, seleção de proposta.
+- [x] Comparador (API + resposta consolidada).
+- [x] Endpoints Contratos Energia: CRUD, arquivos.
 - [ ] Hooks `usePropostas`, `useContratos`; telas de lista/detalhe.
 
 ## 8) Vertical Slice 5 — Migração
-- [ ] Endpoints Migração: criar por UC, etapas, tarefas, arquivos.
+- [x] Endpoints Migração: criar por UC, etapas, tarefas (arquivos pendente).
 - [ ] Kanban de migração; alertas de atraso (persistir notificações).
 - [ ] Hooks `useMigracoes`; telas kanban/detalhe.
 
