@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { prisma } from "../lib/prisma";
 import { z } from "zod";
+import { registrarAuditoria } from "../services/auditoria";
 
 const clienteSchema = z.object({
   razaoSocial: z.string(),
@@ -48,7 +49,15 @@ export async function clienteRoutes(app: FastifyInstance) {
 
   app.post("/clientes", async (request) => {
     const body = clienteSchema.parse(request.body);
-    return prisma.cliente.create({ data: body });
+    const cliente = await prisma.cliente.create({ data: body });
+    await registrarAuditoria({
+      acao: "create",
+      entidade: "Cliente",
+      entidadeId: cliente.id,
+      usuarioId: request.user?.sub,
+      depois: cliente
+    });
+    return cliente;
   });
 
   app.put("/clientes/:id", async (request, reply) => {
@@ -56,12 +65,28 @@ export async function clienteRoutes(app: FastifyInstance) {
     const body = clienteSchema.partial().parse(request.body);
     const exists = await prisma.cliente.findUnique({ where: { id: params.id } });
     if (!exists) return reply.code(404).send({ message: "Cliente não encontrado" });
-    return prisma.cliente.update({ where: { id: params.id }, data: body });
+    const cliente = await prisma.cliente.update({ where: { id: params.id }, data: body });
+    await registrarAuditoria({
+      acao: "update",
+      entidade: "Cliente",
+      entidadeId: cliente.id,
+      usuarioId: request.user?.sub,
+      antes: exists,
+      depois: cliente
+    });
+    return cliente;
   });
 
   app.delete("/clientes/:id", async (request, reply) => {
     const params = z.object({ id: z.string() }).parse(request.params);
-    await prisma.cliente.delete({ where: { id: params.id } });
+    const cliente = await prisma.cliente.delete({ where: { id: params.id } });
+    await registrarAuditoria({
+      acao: "delete",
+      entidade: "Cliente",
+      entidadeId: cliente.id,
+      usuarioId: request.user?.sub,
+      antes: cliente
+    });
     return reply.code(204).send();
   });
 }

@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { prisma } from "../lib/prisma";
 import { z } from "zod";
+import { registrarAuditoria } from "../services/auditoria";
 
 const leadSchema = z.object({
   nomeFantasia: z.string(),
@@ -41,7 +42,15 @@ export async function leadRoutes(app: FastifyInstance) {
 
   app.post("/leads", async (request) => {
     const body = leadSchema.parse(request.body);
-    return prisma.lead.create({ data: body });
+    const lead = await prisma.lead.create({ data: body });
+    await registrarAuditoria({
+      acao: "create",
+      entidade: "Lead",
+      entidadeId: lead.id,
+      usuarioId: request.user?.sub,
+      depois: lead
+    });
+    return lead;
   });
 
   app.put("/leads/:id", async (request, reply) => {
@@ -49,12 +58,28 @@ export async function leadRoutes(app: FastifyInstance) {
     const body = leadSchema.partial().parse(request.body);
     const exists = await prisma.lead.findUnique({ where: { id: params.id } });
     if (!exists) return reply.code(404).send({ message: "Lead não encontrado" });
-    return prisma.lead.update({ where: { id: params.id }, data: body });
+    const lead = await prisma.lead.update({ where: { id: params.id }, data: body });
+    await registrarAuditoria({
+      acao: "update",
+      entidade: "Lead",
+      entidadeId: lead.id,
+      usuarioId: request.user?.sub,
+      antes: exists,
+      depois: lead
+    });
+    return lead;
   });
 
   app.delete("/leads/:id", async (request, reply) => {
     const params = z.object({ id: z.string() }).parse(request.params);
-    await prisma.lead.delete({ where: { id: params.id } });
+    const lead = await prisma.lead.delete({ where: { id: params.id } });
+    await registrarAuditoria({
+      acao: "delete",
+      entidade: "Lead",
+      entidadeId: lead.id,
+      usuarioId: request.user?.sub,
+      antes: lead
+    });
     return reply.code(204).send();
   });
   app.post("/leads/:id/notas", async (request, reply) => {
@@ -68,6 +93,13 @@ export async function leadRoutes(app: FastifyInstance) {
         autorId: request.user!.sub,
         texto: body.texto
       }
+    });
+    await registrarAuditoria({
+      acao: "create",
+      entidade: "LeadAnotacao",
+      entidadeId: nota.id,
+      usuarioId: request.user?.sub,
+      depois: nota
     });
     return nota;
   });
@@ -84,6 +116,13 @@ export async function leadRoutes(app: FastifyInstance) {
         url: body.url,
         tipo: body.tipo
       }
+    });
+    await registrarAuditoria({
+      acao: "create",
+      entidade: "LeadArquivo",
+      entidadeId: arquivo.id,
+      usuarioId: request.user?.sub,
+      depois: arquivo
     });
     return arquivo;
   });
@@ -112,6 +151,15 @@ export async function leadRoutes(app: FastifyInstance) {
     await prisma.lead.update({
       where: { id: params.id },
       data: { status: "convertido" }
+    });
+
+    await registrarAuditoria({
+      acao: "convert",
+      entidade: "Lead",
+      entidadeId: params.id,
+      usuarioId: request.user?.sub,
+      antes: lead,
+      depois: { ...lead, status: "convertido" }
     });
 
     return { clienteId: cliente.id };

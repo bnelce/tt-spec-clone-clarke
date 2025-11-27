@@ -2,6 +2,7 @@ import { FastifyInstance } from "fastify";
 import { prisma } from "../lib/prisma";
 import { z } from "zod";
 import { calcularHonorario } from "../services/honorarios";
+import { registrarAuditoria } from "../services/auditoria";
 
 const contratoGestaoSchema = z.object({
   clienteId: z.string(),
@@ -28,7 +29,15 @@ export async function honorarioRoutes(app: FastifyInstance) {
 
   app.post("/contratos-gestao", async (request) => {
     const body = contratoGestaoSchema.parse(request.body);
-    return prisma.contratoGestao.create({ data: body });
+    const contrato = await prisma.contratoGestao.create({ data: body });
+    await registrarAuditoria({
+      acao: "create",
+      entidade: "ContratoGestao",
+      entidadeId: contrato.id,
+      usuarioId: request.user?.sub,
+      depois: contrato
+    });
+    return contrato;
   });
 
   app.put("/contratos-gestao/:id", async (request, reply) => {
@@ -36,7 +45,16 @@ export async function honorarioRoutes(app: FastifyInstance) {
     const body = contratoGestaoSchema.partial().parse(request.body);
     const contrato = await prisma.contratoGestao.findUnique({ where: { id: params.id } });
     if (!contrato) return reply.code(404).send({ message: "Contrato gestão não encontrado" });
-    return prisma.contratoGestao.update({ where: { id: params.id }, data: body });
+    const updated = await prisma.contratoGestao.update({ where: { id: params.id }, data: body });
+    await registrarAuditoria({
+      acao: "update",
+      entidade: "ContratoGestao",
+      entidadeId: updated.id,
+      usuarioId: request.user?.sub,
+      antes: contrato,
+      depois: updated
+    });
+    return updated;
   });
 
   app.post("/honorarios/calcular", async (request, reply) => {
@@ -62,7 +80,7 @@ export async function honorarioRoutes(app: FastifyInstance) {
       economia: economiaBase
     });
 
-    return prisma.calculoHonorario.create({
+    const honorario = await prisma.calculoHonorario.create({
       data: {
         clienteId: body.clienteId,
         contratoGestaoId: contrato.id,
@@ -72,6 +90,14 @@ export async function honorarioRoutes(app: FastifyInstance) {
         detalhesCalculo: "Calculado automaticamente a partir do modelo configurado"
       }
     });
+    await registrarAuditoria({
+      acao: "create",
+      entidade: "CalculoHonorario",
+      entidadeId: honorario.id,
+      usuarioId: request.user?.sub,
+      depois: honorario
+    });
+    return honorario;
   });
 
   app.get("/honorarios", async (request) => {

@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { prisma } from "../lib/prisma";
 import { z } from "zod";
+import { registrarAuditoria } from "../services/auditoria";
 
 const faturaSchema = z.object({
   clienteId: z.string(),
@@ -49,7 +50,15 @@ export async function faturaRoutes(app: FastifyInstance) {
 
   app.post("/faturas", async (request) => {
     const body = faturaSchema.parse(request.body);
-    return prisma.fatura.create({ data: body });
+    const fatura = await prisma.fatura.create({ data: body });
+    await registrarAuditoria({
+      acao: "create",
+      entidade: "Fatura",
+      entidadeId: fatura.id,
+      usuarioId: request.user?.sub,
+      depois: fatura
+    });
+    return fatura;
   });
 
   app.put("/faturas/:id", async (request, reply) => {
@@ -57,7 +66,16 @@ export async function faturaRoutes(app: FastifyInstance) {
     const body = faturaSchema.partial().parse(request.body);
     const exists = await prisma.fatura.findUnique({ where: { id: params.id } });
     if (!exists) return reply.code(404).send({ message: "Fatura não encontrada" });
-    return prisma.fatura.update({ where: { id: params.id }, data: body });
+    const fatura = await prisma.fatura.update({ where: { id: params.id }, data: body });
+    await registrarAuditoria({
+      acao: "update",
+      entidade: "Fatura",
+      entidadeId: fatura.id,
+      usuarioId: request.user?.sub,
+      antes: exists,
+      depois: fatura
+    });
+    return fatura;
   });
 
   app.post("/faturas/:id/arquivos", async (request, reply) => {
@@ -65,8 +83,16 @@ export async function faturaRoutes(app: FastifyInstance) {
     const body = z.object({ nome: z.string(), url: z.string().url(), tipo: z.string().optional() }).parse(request.body);
     const fatura = await prisma.fatura.findUnique({ where: { id: params.id } });
     if (!fatura) return reply.code(404).send({ message: "Fatura não encontrada" });
-    return prisma.faturaArquivo.create({
+    const arquivo = await prisma.faturaArquivo.create({
       data: { faturaId: params.id, nome: body.nome, url: body.url, tipo: body.tipo }
     });
+    await registrarAuditoria({
+      acao: "upload",
+      entidade: "FaturaArquivo",
+      entidadeId: arquivo.id,
+      usuarioId: request.user?.sub,
+      depois: arquivo
+    });
+    return arquivo;
   });
 }

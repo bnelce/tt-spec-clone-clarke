@@ -1,15 +1,24 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { api } from "../../../lib/api";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
+  const [error, setError] = useState("");
+  const router = useRouter();
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: call /auth/login mutation
-    console.log({ email, senha });
+    try {
+      const data = await api.post<{ token: string; role: string }>("/auth/login", { email, senha });
+      localStorage.setItem("token", data.token);
+      router.push("/dashboard");
+    } catch (err) {
+      setError("Login inválido.");
+    }
   };
 
   return (
@@ -44,6 +53,7 @@ export default function LoginPage() {
             Entrar
           </button>
         </form>
+        {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
       </div>
     </main>
   );

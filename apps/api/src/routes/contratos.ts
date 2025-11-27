@@ -1,6 +1,8 @@
 import { FastifyInstance } from "fastify";
 import { prisma } from "../lib/prisma";
 import { z } from "zod";
+import { registrarAuditoria } from "../services/auditoria";
+import { notificarContratoAVencer } from "../services/notificacoes";
 
 const contratoSchema = z.object({
   clienteId: z.string(),
@@ -60,7 +62,7 @@ export async function contratoRoutes(app: FastifyInstance) {
 
   app.post("/contratos-energia", async (request) => {
     const body = contratoSchema.parse(request.body);
-    return prisma.contratoEnergia.create({
+    const contrato = await prisma.contratoEnergia.create({
       data: {
         ...body,
         ucIds: body.ucIds?.join(","),
@@ -71,6 +73,20 @@ export async function contratoRoutes(app: FastifyInstance) {
           : undefined
       }
     });
+    await registrarAuditoria({
+      acao: "create",
+      entidade: "ContratoEnergia",
+      entidadeId: contrato.id,
+      usuarioId: request.user?.sub,
+      depois: contrato
+    });
+    const diasRestantes = Math.floor(
+      (new Date(contrato.vigenciaFim).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+    );
+    if (diasRestantes > 0 && diasRestantes <= 180) {
+      await notificarContratoAVencer(contrato.id, contrato.clienteId, diasRestantes);
+    }
+    return contrato;
   });
 
   app.put("/contratos-energia/:id", async (request, reply) => {
@@ -79,7 +95,7 @@ export async function contratoRoutes(app: FastifyInstance) {
     const contrato = await prisma.contratoEnergia.findUnique({ where: { id: params.id } });
     if (!contrato) return reply.code(404).send({ message: "Contrato não encontrado" });
 
-    return prisma.contratoEnergia.update({
+    const updated = await prisma.contratoEnergia.update({
       where: { id: params.id },
       data: {
         ...body,
@@ -92,6 +108,15 @@ export async function contratoRoutes(app: FastifyInstance) {
           : undefined
       }
     });
+    await registrarAuditoria({
+      acao: "update",
+      entidade: "ContratoEnergia",
+      entidadeId: updated.id,
+      usuarioId: request.user?.sub,
+      antes: contrato,
+      depois: updated
+    });
+    return updated;
   });
 
   app.post("/contratos-energia/:id/arquivos", async (request, reply) => {
@@ -99,7 +124,7 @@ export async function contratoRoutes(app: FastifyInstance) {
     const body = z.object({ nome: z.string(), url: z.string().url(), tipo: z.string().optional() }).parse(request.body);
     const contrato = await prisma.contratoEnergia.findUnique({ where: { id: params.id } });
     if (!contrato) return reply.code(404).send({ message: "Contrato não encontrado" });
-    return prisma.contratoEnergiaArquivo.create({
+    const arquivo = await prisma.contratoEnergiaArquivo.create({
       data: {
         contratoId: contrato.id,
         nome: body.nome,
@@ -107,5 +132,13 @@ export async function contratoRoutes(app: FastifyInstance) {
         tipo: body.tipo
       }
     });
+    await registrarAuditoria({
+      acao: "upload",
+      entidade: "ContratoEnergiaArquivo",
+      entidadeId: arquivo.id,
+      usuarioId: request.user?.sub,
+      depois: arquivo
+    });
+    return arquivo;
   });
 }

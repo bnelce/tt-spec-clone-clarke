@@ -18,22 +18,22 @@ Use as caixas para marcar conclusão das tarefas. Ordem sugerida, podendo parale
 - [x] Seeds iniciais: etapas de oportunidades, perfil admin, usuário admin (prisma/seed.ts). Migração etapas ainda pendente.
 
 ## 3) Auth & RBAC
-- [ ] Implementar modelos `UsuarioInterno`, `UsuarioCliente`, `Papel`.
-- [ ] Endpoints `/auth/login` (interno) e `/portal/auth/login` (cliente).
-- [ ] Guards por role (Comercial, Analista, Financeiro, Admin) e escopo cliente no portal.
-- [ ] Proteções básicas: rate limit em login, expiração de token.
+- [x] Modelos já definidos em `schema.prisma` para usuários e papéis.
+- [x] Endpoints `/auth/login` (interno) e `/portal/auth/login` (cliente).
+- [x] Guards por role e escopo cliente (`authorize`, `authorizeCliente`).
+- [ ] Proteções adicionais: rate limit/login attempts (pendente).
 
-## 4) Vertical Slice 1 — CRM
+## 4) Vertical Slice 1 – CRM
 - [x] Endpoints Leads: CRUD + notas + arquivos + converter para cliente.
 - [x] Endpoints Oportunidades: criar/listar (kanban), mudar etapa, histórico.
 - [ ] Validações (Zod) conforme specs; paginação em listas (parcial: leads/clientes/ucs).
-- [ ] Hooks React Query: `useLeads`, `useOportunidades`; telas Next (lista, formulário, kanban).
+- [x] Hooks/telas básicas para leads e oportunidades; [ ] kanban completo + formulários.
 
-## 5) Vertical Slice 2 — Clientes & UCs
-- [ ] Endpoints Clientes: CRUD, arquivos.
-- [ ] Endpoints UCs: CRUD, import CSV (stub inicial).
+## 5) Vertical Slice 2 – Clientes & UCs
+- [x] Endpoints Clientes: CRUD, arquivos.
+- [x] Endpoints UCs: CRUD, import CSV (stub inicial).
 - [ ] Integrar com CRM (conversão de lead cria cliente).
-- [ ] Hooks `useClientes`, `useUcs`; telas Next (lista/detalhe/CRUD).
+- [x] Hooks `useClientes`, `useUcs`; telas Next básicas. [ ] telas detalhadas/CRUD.
 
 ## 6) Vertical Slice 3 — Análise de Viabilidade
 - [x] Endpoints: criar análise com dados mensais, calcular resultado (rotas `/analises`).
@@ -41,44 +41,44 @@ Use as caixas para marcar conclusão das tarefas. Ordem sugerida, podendo parale
 - [x] Serviço de cálculo (custo cativo vs livre, economia); payback opcional pendente.
 - [ ] Hooks `useAnalises`; telas para input/upload e visualização (gráficos).
 
-## 7) Vertical Slice 4 — Propostas & Contratos de Energia
+## 7) Vertical Slice 4 – Propostas & Contratos de Energia
 - [x] Endpoints Comercializadoras: CRUD.
 - [x] Endpoints Propostas: CRUD, seleção de proposta.
 - [x] Comparador (API + resposta consolidada).
 - [x] Endpoints Contratos Energia: CRUD, arquivos.
-- [ ] Hooks `usePropostas`, `useContratos`; telas de lista/detalhe.
+- [x] Hooks `usePropostas`, `useContratos` + telas básicas. [ ] telas detalhadas/CRUD.
 
-## 8) Vertical Slice 5 — Migração
+## 8) Vertical Slice 5 – Migração
 - [x] Endpoints Migração: criar por UC, etapas, tarefas (arquivos pendente).
 - [ ] Kanban de migração; alertas de atraso (persistir notificações).
-- [ ] Hooks `useMigracoes`; telas kanban/detalhe.
+- [x] Hook/tela básica `useMigracoes`; [ ] detalhar tarefas + kanban arrastar.
 
-## 9) Vertical Slice 6 — Pós-Migração (Faturas, Medição, Exposição)
+## 9) Vertical Slice 6 – Pós-Migração (Faturas, Medição, Exposição)
 - [x] Endpoints Faturas: CRUD + upload metadata.
 - [x] Endpoints Medições: CRUD.
 - [x] Endpoint Exposição: calcular e persistir.
-- [ ] Hooks `useFaturas`, `useMedicoes`, `useExposicoes`; telas de lista e gráfico básico.
+- [x] Hook/tela básica `useFaturas`; [ ] hooks de medições/exposições + gráficos.
 
-## 10) Vertical Slice 7 — Honorários
+## 10) Vertical Slice 7 – Honorários
 - [x] Endpoints Contratos de Gestão: CRUD.
 - [x] Endpoint Cálculo de Honorário (modelo simples).
 - [ ] Endpoint Relatórios de Honorário (pendente).
-- [ ] Hooks `useHonorarios`; telas de contrato e cálculo.
+- [x] Hook/tela básica `useHonorarios`; [ ] telas de contratos de gestão + cálculo avançado.
 
 ## 11) Portal do Cliente
 - [x] Endpoints portal: dashboard, relatórios, documentos.
-- [ ] Hooks portal (`usePortalDashboard`, `usePortalRelatorios`, `usePortalDocumentos`).
-- [ ] Telas portal: login, dashboard, relatórios, documentos. (login/Dashboard esqueleto criados)
+- [x] Hooks portal (`usePortalDashboard`, `usePortalRelatorios`, `usePortalDocumentos`).
+- [x] Telas portal: login, dashboard, relatórios e documentos básicos.
 
 ## 12) Alertas, Notificações e Auditoria
-- [ ] Registrar `LogAuditoria` em CRUD críticos.
-- [ ] Persistir `Notificacao` para: contrato a vencer, migração atrasada, exposição alta, falta de fatura.
-- [ ] Badge de alertas no topo do app interno.
+- [x] Registrar `LogAuditoria` em CRUD de leads/clientes/UCs/contratos/faturas/migrações/honorários.
+- [x] Notificações automáticas: contrato a vencer e migração atrasada + listagem `/notificacoes`.
+- [ ] Expandir notificações (exposição alta, fatura ausente) + UI/badge no app.
 
 ## 13) UI/UX e Componentes
-- [ ] Layout interno (sidebar/topbar), tema da gestora.
+- [x] Layout interno inicial (sidebar/topbar) e páginas base.
 - [ ] Formulários com `react-hook-form + zod` e componentes shadcn.
-- [ ] Tabelas com filtros/paginação; uploads.
+- [ ] Tabelas com filtros/paginação avançados; uploads.
 - [ ] Kanban (oportunidades, migração); gráficos (recharts ou similar).
 
 ## 14) Alertas, Notificações e Auditoria
