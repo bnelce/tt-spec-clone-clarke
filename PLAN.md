@@ -36,8 +36,9 @@ Use as caixas para marcar conclusão das tarefas. Ordem sugerida, podendo parale
 - [ ] Hooks `useClientes`, `useUcs`; telas Next (lista/detalhe/CRUD).
 
 ## 6) Vertical Slice 3 — Análise de Viabilidade
-- [ ] Endpoints: criar análise com dados mensais, calcular resultado, anexos.
-- [ ] Serviço de cálculo (custo cativo vs livre, economia, payback opcional).
+- [x] Endpoints: criar análise com dados mensais, calcular resultado (rotas `/analises`).
+- [ ] Upload/anexos de análise pendente.
+- [x] Serviço de cálculo (custo cativo vs livre, economia); payback opcional pendente.
 - [ ] Hooks `useAnalises`; telas para input/upload e visualização (gráficos).
 
 ## 7) Vertical Slice 4 — Propostas & Contratos de Energia

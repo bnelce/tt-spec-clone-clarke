@@ -4,6 +4,7 @@ import { leadRoutes } from "./leads";
 import { clienteRoutes } from "./clientes";
 import { ucRoutes } from "./ucs";
 import { oportunidadeRoutes } from "./oportunidades";
+import { analiseRoutes } from "./analises";
 
 export async function registerRoutes(app: FastifyInstance) {
   await app.register(authRoutes);
@@ -11,4 +12,5 @@ export async function registerRoutes(app: FastifyInstance) {
   await app.register(clienteRoutes);
   await app.register(ucRoutes);
   await app.register(oportunidadeRoutes);
+  await app.register(analiseRoutes);
 }
