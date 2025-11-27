@@ -27,7 +27,8 @@ Use as caixas para marcar conclusão das tarefas. Ordem sugerida, podendo parale
 - [x] Endpoints Leads: CRUD + notas + arquivos + converter para cliente.
 - [x] Endpoints Oportunidades: criar/listar (kanban), mudar etapa, histórico.
 - [ ] Validações (Zod) conforme specs; paginação em listas (parcial: leads/clientes/ucs).
-- [x] Hooks/telas básicas para leads e oportunidades; [ ] kanban completo + formulários.
+- [x] Hooks/telas básicas para leads e oportunidades.
+- [x] Formulário de criação de leads (React Hook Form + Zod); [ ] formulários restantes + kanban completo.
 
 ## 5) Vertical Slice 2 – Clientes & UCs
 - [x] Endpoints Clientes: CRUD, arquivos.
@@ -57,7 +58,7 @@ Use as caixas para marcar conclusão das tarefas. Ordem sugerida, podendo parale
 - [x] Endpoints Faturas: CRUD + upload metadata.
 - [x] Endpoints Medições: CRUD.
 - [x] Endpoint Exposição: calcular e persistir.
-- [x] Hook/tela básica `useFaturas`; [ ] hooks de medições/exposições + gráficos.
+- [x] Hooks/telas básicas (`useFaturas`, `useMedicoes`, `useExposicoes`); [ ] gráficos analíticos e filtros avançados.
 
 ## 10) Vertical Slice 7 – Honorários
 - [x] Endpoints Contratos de Gestão: CRUD.
