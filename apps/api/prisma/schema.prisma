@@ -143,6 +143,7 @@ model Oportunidade {
   probabilidade         Float?
   dataEstimativaFechamento DateTime?
   motivoPerda           String?
+  observacoes           String?
   criadoEm              DateTime  @default(now())
   historico             OportunidadeHistorico[]
   propostas             PropostaEnergia[]

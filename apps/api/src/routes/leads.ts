@@ -16,7 +16,7 @@ const leadSchema = z.object({
 });
 
 export async function leadRoutes(app: FastifyInstance) {
-  app.addHook("preHandler", app.authenticate);
+  app.addHook("preHandler", app.authorize(["admin", "diretor", "comercial"]));
 
   app.get("/leads", async (request) => {
     const page = Number((request.query as any).page ?? 1);
@@ -56,5 +56,64 @@ export async function leadRoutes(app: FastifyInstance) {
     const params = z.object({ id: z.string() }).parse(request.params);
     await prisma.lead.delete({ where: { id: params.id } });
     return reply.code(204).send();
+  });
+  app.post("/leads/:id/notas", async (request, reply) => {
+    const params = z.object({ id: z.string() }).parse(request.params);
+    const body = z.object({ texto: z.string().min(1) }).parse(request.body);
+    const lead = await prisma.lead.findUnique({ where: { id: params.id } });
+    if (!lead) return reply.code(404).send({ message: "Lead não encontrado" });
+    const nota = await prisma.leadAnotacao.create({
+      data: {
+        leadId: params.id,
+        autorId: request.user!.sub,
+        texto: body.texto
+      }
+    });
+    return nota;
+  });
+
+  app.post("/leads/:id/arquivos", async (request, reply) => {
+    const params = z.object({ id: z.string() }).parse(request.params);
+    const body = z.object({ nome: z.string(), url: z.string().url(), tipo: z.string().optional() }).parse(request.body);
+    const lead = await prisma.lead.findUnique({ where: { id: params.id } });
+    if (!lead) return reply.code(404).send({ message: "Lead não encontrado" });
+    const arquivo = await prisma.leadArquivo.create({
+      data: {
+        leadId: params.id,
+        nome: body.nome,
+        url: body.url,
+        tipo: body.tipo
+      }
+    });
+    return arquivo;
+  });
+
+  app.post("/leads/:id/convert", async (request, reply) => {
+    const params = z.object({ id: z.string() }).parse(request.params);
+    const lead = await prisma.lead.findUnique({ where: { id: params.id } });
+    if (!lead) return reply.code(404).send({ message: "Lead não encontrado" });
+
+    const existingCliente = await prisma.cliente.findUnique({ where: { cnpj: lead.cnpj } });
+    const cliente =
+      existingCliente ??
+      (await prisma.cliente.create({
+        data: {
+          razaoSocial: lead.nomeFantasia,
+          nomeFantasia: lead.nomeFantasia,
+          cnpj: lead.cnpj,
+          segmento: lead.segmento,
+          contatoNome: lead.contatoNome,
+          contatoEmail: lead.email,
+          contatoTelefone: lead.telefone,
+          observacoes: lead.observacoes
+        }
+      }));
+
+    await prisma.lead.update({
+      where: { id: params.id },
+      data: { status: "convertido" }
+    });
+
+    return { clienteId: cliente.id };
   });
 }

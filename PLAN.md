@@ -14,7 +14,7 @@ Use as caixas para marcar conclusão das tarefas. Ordem sugerida, podendo parale
 - [x] Criar `.env` exemplo e `docker-compose.yml` (MySQL + API).
 - [x] Definir `schema.prisma` cobrindo entidades dos domain specs.
 - [ ] Gerar migrations e Prisma Client (`prisma migrate dev`, `prisma generate`).
-- [x] Middlewares: logger, error handler, auth JWT, RBAC simples (auth plugin registrado; RBAC detalhar por rota ainda pendente).
+- [x] Middlewares: logger, error handler, auth JWT, RBAC simples (auth/authorize plugin por rota).
 - [x] Seeds iniciais: etapas de oportunidades, perfil admin, usuário admin (prisma/seed.ts). Migração etapas ainda pendente.
 
 ## 3) Auth & RBAC
@@ -24,9 +24,9 @@ Use as caixas para marcar conclusão das tarefas. Ordem sugerida, podendo parale
 - [ ] Proteções básicas: rate limit em login, expiração de token.
 
 ## 4) Vertical Slice 1 — CRM
-- [x] Endpoints Leads: CRUD (básico). Notas/arquivos e converter para cliente pendentes.
-- [ ] Endpoints Oportunidades: criar/listar (kanban), mudar etapa, histórico.
-- [ ] Validações (Zod) conforme specs; paginação em listas (parcial).
+- [x] Endpoints Leads: CRUD + notas + arquivos + converter para cliente.
+- [x] Endpoints Oportunidades: criar/listar (kanban), mudar etapa, histórico.
+- [ ] Validações (Zod) conforme specs; paginação em listas (parcial: leads/clientes/ucs).
 - [ ] Hooks React Query: `useLeads`, `useOportunidades`; telas Next (lista, formulário, kanban).
 
 ## 5) Vertical Slice 2 — Clientes & UCs

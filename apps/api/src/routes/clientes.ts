@@ -15,7 +15,7 @@ const clienteSchema = z.object({
 });
 
 export async function clienteRoutes(app: FastifyInstance) {
-  app.addHook("preHandler", app.authenticate);
+  app.addHook("preHandler", app.authorize(["admin", "diretor", "comercial", "analista"]));
 
   app.get("/clientes", async (request) => {
     const page = Number((request.query as any).page ?? 1);
