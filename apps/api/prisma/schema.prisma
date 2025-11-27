@@ -1,0 +1,580 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum PapelInterno {
+  admin
+  diretor
+  comercial
+  analista
+  financeiro
+}
+
+enum StatusAtivo {
+  ativo
+  inativo
+}
+
+enum TipoFatura {
+  cativa
+  livre
+}
+
+enum RiscoExposicao {
+  baixo
+  medio
+  alto
+}
+
+enum ModeloHonorario {
+  fixo
+  percentualEconomia
+  hibrido
+  taxaUnica
+}
+
+model UsuarioInterno {
+  id        String      @id @default(cuid())
+  nome      String
+  email     String      @unique
+  senhaHash String
+  papel     PapelInterno
+  status    StatusAtivo @default(ativo)
+  criadoEm  DateTime    @default(now())
+  atualizadoEm DateTime @updatedAt
+}
+
+model UsuarioCliente {
+  id        String      @id @default(cuid())
+  cliente   Cliente     @relation(fields: [clienteId], references: [id])
+  clienteId String
+  nome      String
+  email     String      @unique
+  senhaHash String
+  status    StatusAtivo @default(ativo)
+  criadoEm  DateTime    @default(now())
+  atualizadoEm DateTime @updatedAt
+}
+
+model Gestora {
+  id          String @id @default(cuid())
+  nomeFantasia String
+  razaoSocial  String
+  cnpj         String
+  endereco     String?
+  contato      String?
+  config       GestoraConfig?
+}
+
+model GestoraConfig {
+  id         String  @id @default(cuid())
+  gestora    Gestora @relation(fields: [gestoraId], references: [id])
+  gestoraId  String  @unique
+  timezone   String?
+  idioma     String? @default("pt-BR")
+  moeda      String? @default("BRL")
+  logoUrl    String?
+  corPrimaria String?
+}
+
+model Lead {
+  id             String         @id @default(cuid())
+  nomeFantasia   String
+  cnpj           String
+  contatoNome    String?
+  contatoCargo   String?
+  email          String?
+  telefone       String?
+  segmento       String?
+  origem         String?
+  status         String         @default("novo")
+  observacoes    String?
+  criadoEm       DateTime       @default(now())
+  anotacoes      LeadAnotacao[]
+  arquivos       LeadArquivo[]
+  oportunidades  Oportunidade[]
+}
+
+model LeadAnotacao {
+  id        String   @id @default(cuid())
+  lead      Lead     @relation(fields: [leadId], references: [id])
+  leadId    String
+  autor     UsuarioInterno @relation(fields: [autorId], references: [id])
+  autorId   String
+  texto     String
+  criadoEm  DateTime @default(now())
+}
+
+model LeadArquivo {
+  id        String @id @default(cuid())
+  lead      Lead   @relation(fields: [leadId], references: [id])
+  leadId    String
+  nome      String
+  url       String
+  tipo      String?
+  criadoEm  DateTime @default(now())
+}
+
+model OportunidadeEtapa {
+  id       String  @id @default(cuid())
+  nome     String
+  ordem    Int
+  ativo    Boolean @default(true)
+  createdAt DateTime @default(now())
+  oportunidades Oportunidade[]
+}
+
+model Oportunidade {
+  id                    String    @id @default(cuid())
+  lead                  Lead?     @relation(fields: [leadId], references: [id])
+  leadId                String?
+  cliente               Cliente?  @relation(fields: [clienteId], references: [id])
+  clienteId             String?
+  valorPotencial        Float?
+  responsavel           UsuarioInterno? @relation(fields: [responsavelId], references: [id])
+  responsavelId         String?
+  etapa                 OportunidadeEtapa @relation(fields: [etapaId], references: [id])
+  etapaId               String
+  probabilidade         Float?
+  dataEstimativaFechamento DateTime?
+  motivoPerda           String?
+  criadoEm              DateTime  @default(now())
+  historico             OportunidadeHistorico[]
+  propostas             PropostaEnergia[]
+}
+
+model OportunidadeHistorico {
+  id               String    @id @default(cuid())
+  oportunidade     Oportunidade @relation(fields: [oportunidadeId], references: [id])
+  oportunidadeId   String
+  etapaAnterior    String?
+  etapaAtual       String
+  usuario          UsuarioInterno @relation(fields: [usuarioId], references: [id])
+  usuarioId        String
+  motivo           String?
+  criadoEm         DateTime  @default(now())
+}
+
+model Cliente {
+  id             String           @id @default(cuid())
+  razaoSocial    String
+  nomeFantasia   String
+  cnpj           String           @unique
+  segmento       String?
+  endereco       String?
+  contatoNome    String?
+  contatoEmail   String?
+  contatoTelefone String?
+  observacoes    String?
+  criadoEm       DateTime @default(now())
+  arquivos       ClienteArquivo[]
+  ucs            UC[]
+  usuarios       UsuarioCliente[]
+  contratos      ContratoEnergia[]
+  contratosGestao ContratoGestao[]
+  faturas        Fatura[]
+  medicoes       Medicao[]
+  exposicoes     ExposicaoContratual[]
+  honorarios     CalculoHonorario[]
+}
+
+model ClienteArquivo {
+  id        String  @id @default(cuid())
+  cliente   Cliente @relation(fields: [clienteId], references: [id])
+  clienteId String
+  nome      String
+  url       String
+  tipo      String?
+  criadoEm  DateTime @default(now())
+}
+
+model UC {
+  id                     String @id @default(cuid())
+  cliente                Cliente @relation(fields: [clienteId], references: [id])
+  clienteId              String
+  codigo                 String
+  distribuidora          String?
+  submercado             String?
+  modalidadeTarifaria    String?
+  tensao                 String?
+  demandaContratadaKw    Float?
+  consumoMedioKwhMes     Float?
+  cidade                 String?
+  estado                 String?
+  observacoes            String?
+  criadoEm               DateTime @default(now())
+  arquivos               UCArquivo[]
+  analises               AnaliseViabilidade[]
+  migracoes              Migracao[]
+  contratos              ContratoEnergia[] @relation("ContratoUC")
+  faturas                Fatura[]
+  medicoes               Medicao[]
+  exposicoes             ExposicaoContratual[]
+}
+
+model UCArquivo {
+  id        String @id @default(cuid())
+  uc        UC     @relation(fields: [ucId], references: [id])
+  ucId      String
+  nome      String
+  url       String
+  tipo      String?
+  criadoEm  DateTime @default(now())
+}
+
+model AnaliseViabilidade {
+  id             String    @id @default(cuid())
+  cliente        Cliente?  @relation(fields: [clienteId], references: [id])
+  clienteId      String?
+  uc             UC?       @relation(fields: [ucId], references: [id])
+  ucId           String?
+  oportunidade   Oportunidade? @relation(fields: [oportunidadeId], references: [id])
+  oportunidadeId String?
+  periodoMeses   Int
+  status         String    @default("criada")
+  criadoPor      UsuarioInterno @relation(fields: [criadoPorId], references: [id])
+  criadoPorId    String
+  criadoEm       DateTime  @default(now())
+  meses          AnaliseViabilidadeMes[]
+  resultado      AnaliseViabilidadeResultado?
+  arquivos       AnaliseViabilidadeArquivo[]
+}
+
+model AnaliseViabilidadeMes {
+  id           String   @id @default(cuid())
+  analise      AnaliseViabilidade @relation(fields: [analiseId], references: [id])
+  analiseId    String
+  mesRef       String
+  consumoKwh   Float
+  demandaKw    Float
+  tarifaTe     Float?
+  tarifaTusd   Float?
+  impostos     Float?
+  tipoTarifa   String?
+}
+
+model AnaliseViabilidadeResultado {
+  id               String   @id @default(cuid())
+  analise          AnaliseViabilidade @relation(fields: [analiseId], references: [id])
+  analiseId        String   @unique
+  custoCativoProj  Float
+  custoLivreProj   Float
+  economiaEstimativa Float
+  economiaPercent  Float
+  paybackMeses     Float?
+  premissasPreco   String?
+}
+
+model AnaliseViabilidadeArquivo {
+  id        String   @id @default(cuid())
+  analise   AnaliseViabilidade @relation(fields: [analiseId], references: [id])
+  analiseId String
+  nome      String
+  url       String
+  tipo      String?
+  criadoEm  DateTime @default(now())
+}
+
+model Comercializadora {
+  id                  String @id @default(cuid())
+  nome                String
+  cnpj                String?
+  contatoComercial    String?
+  contatoOperacional  String?
+  observacoes         String?
+  contratos           ContratoEnergia[]
+  propostas           PropostaEnergia[]
+}
+
+model PropostaEnergia {
+  id                 String    @id @default(cuid())
+  cliente            Cliente?  @relation(fields: [clienteId], references: [id])
+  clienteId          String?
+  ucIds              String?   // csv list for simplicidade
+  comercializadora   Comercializadora @relation(fields: [comercializadoraId], references: [id])
+  comercializadoraId String
+  tipoContrato       String?
+  volumeMwhMes       Float?
+  volumeMwhAno       Float?
+  precoBase          Float?
+  indexador          String?
+  fonte              String?
+  vigenciaInicio     DateTime?
+  vigenciaFim        DateTime?
+  oportunidade       Oportunidade? @relation(fields: [oportunidadeId], references: [id])
+  oportunidadeId     String?
+  observacoes        String?
+  selecionada        Boolean @default(false)
+  curvas             PropostaEnergiaCurva[]
+  createdAt          DateTime @default(now())
+}
+
+model PropostaEnergiaCurva {
+  id         String  @id @default(cuid())
+  proposta   PropostaEnergia @relation(fields: [propostaId], references: [id])
+  propostaId String
+  mesRef     String
+  volumeMwh  Float
+  preco      Float
+}
+
+model ContratoEnergia {
+  id                 String    @id @default(cuid())
+  cliente            Cliente   @relation(fields: [clienteId], references: [id])
+  clienteId          String
+  comercializadora   Comercializadora @relation(fields: [comercializadoraId], references: [id])
+  comercializadoraId String
+  ucIds              String?   // csv list; ligação formal via relation table opcional
+  tipoContrato       String?
+  vigenciaInicio     DateTime
+  vigenciaFim        DateTime
+  volumeMwhMes       Float?
+  volumeMwhAno       Float?
+  preco              Float?
+  formulaPreco       String?
+  indexador          String?
+  periodicidadeReajuste String?
+  condicoesEspeciais String?
+  status             String   @default("futuro")
+  observacoes        String?
+  curvas             ContratoEnergiaCurvaMensal[]
+  arquivos           ContratoEnergiaArquivo[]
+  migracoes          Migracao[]
+  faturas            Fatura[]
+  exposicoes         ExposicaoContratual[]
+  createdAt          DateTime @default(now())
+}
+
+model ContratoEnergiaCurvaMensal {
+  id         String @id @default(cuid())
+  contrato   ContratoEnergia @relation(fields: [contratoId], references: [id])
+  contratoId String
+  mesRef     String
+  volumeMwh  Float
+  preco      Float
+}
+
+model ContratoEnergiaArquivo {
+  id         String @id @default(cuid())
+  contrato   ContratoEnergia @relation(fields: [contratoId], references: [id])
+  contratoId String
+  nome       String
+  url        String
+  tipo       String?
+  criadoEm   DateTime @default(now())
+}
+
+model Migracao {
+  id           String   @id @default(cuid())
+  cliente      Cliente  @relation(fields: [clienteId], references: [id])
+  clienteId    String
+  uc           UC       @relation(fields: [ucId], references: [id])
+  ucId         String
+  responsavel  UsuarioInterno? @relation(fields: [responsavelId], references: [id])
+  responsavelId String?
+  status       String   @default("em_andamento")
+  criadoEm     DateTime @default(now())
+  etapas       MigracaoEtapa[]
+  tarefas      MigracaoTarefa[]
+  arquivos     MigracaoArquivo[]
+}
+
+model MigracaoEtapa {
+  id          String   @id @default(cuid())
+  migracao    Migracao @relation(fields: [migracaoId], references: [id])
+  migracaoId  String
+  nome        String
+  ordem       Int
+  prazoPrevisto DateTime?
+  status      String   @default("pendente")
+  concluidoEm DateTime?
+}
+
+model MigracaoTarefa {
+  id          String   @id @default(cuid())
+  migracao    Migracao @relation(fields: [migracaoId], references: [id])
+  migracaoId  String
+  etapa       MigracaoEtapa @relation(fields: [etapaId], references: [id])
+  etapaId     String
+  titulo      String
+  descricao   String?
+  responsavel UsuarioInterno? @relation(fields: [responsavelId], references: [id])
+  responsavelId String?
+  prazo       DateTime?
+  status      String   @default("pendente")
+  concluidoEm DateTime?
+}
+
+model MigracaoArquivo {
+  id         String   @id @default(cuid())
+  migracao   Migracao @relation(fields: [migracaoId], references: [id])
+  migracaoId String
+  nome       String
+  url        String
+  tipo       String?
+  criadoEm   DateTime @default(now())
+}
+
+model Fatura {
+  id           String    @id @default(cuid())
+  cliente      Cliente   @relation(fields: [clienteId], references: [id])
+  clienteId    String
+  uc           UC        @relation(fields: [ucId], references: [id])
+  ucId         String
+  tipo         TipoFatura
+  competencia  String
+  consumoKwh   Float
+  demandaKw    Float?
+  encargos     Float?
+  tarifas      Float?
+  tributos     Float?
+  valorTotal   Float
+  contrato     ContratoEnergia? @relation(fields: [contratoEnergiaId], references: [id])
+  contratoEnergiaId String?
+  criadoEm     DateTime @default(now())
+  arquivos     FaturaArquivo[]
+}
+
+model FaturaArquivo {
+  id        String  @id @default(cuid())
+  fatura    Fatura  @relation(fields: [faturaId], references: [id])
+  faturaId  String
+  nome      String
+  url       String
+  tipo      String?
+  criadoEm  DateTime @default(now())
+}
+
+model Medicao {
+  id           String   @id @default(cuid())
+  cliente      Cliente  @relation(fields: [clienteId], references: [id])
+  clienteId    String
+  uc           UC       @relation(fields: [ucId], references: [id])
+  ucId         String
+  competencia  String
+  energiaKwh   Float
+  demandaKw    Float?
+  pontaKwh     Float?
+  foraPontaKwh Float?
+  criadoEm     DateTime @default(now())
+}
+
+model ExposicaoContratual {
+  id                    String   @id @default(cuid())
+  cliente               Cliente  @relation(fields: [clienteId], references: [id])
+  clienteId             String
+  uc                    UC       @relation(fields: [ucId], references: [id])
+  ucId                  String
+  competencia           String
+  volumeContratadoMwh   Float
+  volumeMedidoMwh       Float
+  exposicaoAbsolutaMwh  Float
+  exposicaoPercent      Float
+  risco                 RiscoExposicao
+  contrato              ContratoEnergia @relation(fields: [contratoEnergiaId], references: [id])
+  contratoEnergiaId     String
+  criadoEm              DateTime @default(now())
+}
+
+model ContratoGestao {
+  id                String   @id @default(cuid())
+  cliente           Cliente  @relation(fields: [clienteId], references: [id])
+  clienteId         String
+  modelo            ModeloHonorario
+  valorFixo         Float?
+  percentualEconomia Float?
+  taxaUnica         Float?
+  inicio            DateTime
+  fim               DateTime?
+  observacoes       String?
+  createdAt         DateTime @default(now())
+  honorarios        CalculoHonorario[]
+}
+
+model CalculoHonorario {
+  id               String    @id @default(cuid())
+  cliente          Cliente   @relation(fields: [clienteId], references: [id])
+  clienteId        String
+  contratoGestao   ContratoGestao @relation(fields: [contratoGestaoId], references: [id])
+  contratoGestaoId String
+  competencia      String
+  economiaBase     Float?
+  valorHonorario   Float
+  detalhesCalculo  String?
+  status           String   @default("gerado")
+  criadoEm         DateTime @default(now())
+}
+
+model RelatorioHonorario {
+  id          String   @id @default(cuid())
+  cliente     Cliente  @relation(fields: [clienteId], references: [id])
+  clienteId   String
+  competencia String
+  valorTotal  Float
+  geradoPor   UsuarioInterno @relation(fields: [geradoPorId], references: [id])
+  geradoPorId String
+  criadoEm    DateTime @default(now())
+  url         String?
+}
+
+model RelatorioPortal {
+  id          String   @id @default(cuid())
+  cliente     Cliente  @relation(fields: [clienteId], references: [id])
+  clienteId   String
+  competencia String?
+  tipo        String
+  url         String
+  criadoEm    DateTime @default(now())
+}
+
+model DocumentoPortal {
+  id        String   @id @default(cuid())
+  cliente   Cliente  @relation(fields: [clienteId], references: [id])
+  clienteId String
+  nome      String
+  url       String
+  tipo      String?
+  criadoEm  DateTime @default(now())
+}
+
+model TipoNotificacao {
+  id        String   @id @default(cuid())
+  codigo    String   @unique
+  descricao String
+  canais    String
+  ativo     Boolean  @default(true)
+  notificacoes Notificacao[]
+}
+
+model Notificacao {
+  id          String   @id @default(cuid())
+  tipo        TipoNotificacao @relation(fields: [tipoId], references: [id])
+  tipoId      String
+  referenciaEntidade String?
+  referenciaId String?
+  usuarioDestino UsuarioInterno? @relation(fields: [usuarioDestinoId], references: [id])
+  usuarioDestinoId String?
+  cliente       Cliente? @relation(fields: [clienteId], references: [id])
+  clienteId     String?
+  titulo        String
+  mensagem      String
+  lida          Boolean @default(false)
+  criadoEm      DateTime @default(now())
+}
+
+model LogAuditoria {
+  id          String   @id @default(cuid())
+  acao        String
+  entidade    String
+  entidadeId  String
+  usuario     UsuarioInterno? @relation(fields: [usuarioId], references: [id])
+  usuarioId   String?
+  dataHora    DateTime @default(now())
+  antes       String?
+  depois      String?
+}
