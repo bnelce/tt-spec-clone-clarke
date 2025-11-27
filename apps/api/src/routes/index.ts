@@ -9,6 +9,11 @@ import { comercializadoraRoutes } from "./comercializadoras";
 import { propostaRoutes } from "./propostas";
 import { contratoRoutes } from "./contratos";
 import { migracaoRoutes } from "./migracoes";
+import { faturaRoutes } from "./faturas";
+import { medicaoRoutes } from "./medicoes";
+import { exposicaoRoutes } from "./exposicoes";
+import { honorarioRoutes } from "./honorarios";
+import { portalRoutes } from "./portal";
 
 export async function registerRoutes(app: FastifyInstance) {
   await app.register(authRoutes);
@@ -21,4 +26,9 @@ export async function registerRoutes(app: FastifyInstance) {
   await app.register(propostaRoutes);
   await app.register(contratoRoutes);
   await app.register(migracaoRoutes);
+  await app.register(faturaRoutes);
+  await app.register(medicaoRoutes);
+  await app.register(exposicaoRoutes);
+  await app.register(honorarioRoutes);
+  await app.register(portalRoutes);
 }

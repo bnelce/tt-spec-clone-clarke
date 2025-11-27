@@ -12,6 +12,7 @@ declare module "fastify" {
   interface FastifyInstance {
     authenticate: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
     authorize: (allowed?: string[]) => (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
+    authorizeCliente: () => (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
   }
   interface FastifyRequest {
     user?: JwtUserPayload;
@@ -37,6 +38,17 @@ export default fp(async function authPlugin(fastify) {
         const role = request.user?.role;
         if (!role || !allowed.includes(role)) {
           reply.code(403).send({ message: "Sem permissão" });
+        }
+      }
+  );
+
+  fastify.decorate(
+    "authorizeCliente",
+    () =>
+      async (request: FastifyRequest, reply: FastifyReply) => {
+        await fastify.authenticate(request, reply);
+        if (request.user?.scope !== "cliente") {
+          reply.code(403).send({ message: "Área exclusiva do cliente" });
         }
       }
   );

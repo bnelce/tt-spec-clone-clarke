@@ -54,19 +54,19 @@ Use as caixas para marcar conclusão das tarefas. Ordem sugerida, podendo parale
 - [ ] Hooks `useMigracoes`; telas kanban/detalhe.
 
 ## 9) Vertical Slice 6 — Pós-Migração (Faturas, Medição, Exposição)
-- [ ] Endpoints Faturas: CRUD + upload PDF.
-- [ ] Endpoints Medições: CRUD.
-- [ ] Endpoint Exposição: calcular e persistir.
+- [x] Endpoints Faturas: CRUD + upload metadata.
+- [x] Endpoints Medições: CRUD.
+- [x] Endpoint Exposição: calcular e persistir.
 - [ ] Hooks `useFaturas`, `useMedicoes`, `useExposicoes`; telas de lista e gráfico básico.
 
 ## 10) Vertical Slice 7 — Honorários
-- [ ] Endpoints Contratos de Gestão: CRUD.
-- [ ] Endpoint Cálculo de Honorário (fixo, % economia, híbrido, taxa única).
-- [ ] Endpoint Relatórios de Honorário.
+- [x] Endpoints Contratos de Gestão: CRUD.
+- [x] Endpoint Cálculo de Honorário (modelo simples).
+- [ ] Endpoint Relatórios de Honorário (pendente).
 - [ ] Hooks `useHonorarios`; telas de contrato e cálculo.
 
 ## 11) Portal do Cliente
-- [ ] Endpoints portal: dashboard, relatórios, documentos.
+- [x] Endpoints portal: dashboard, relatórios, documentos.
 - [ ] Hooks portal (`usePortalDashboard`, `usePortalRelatorios`, `usePortalDocumentos`).
 - [ ] Telas portal: login, dashboard, relatórios, documentos. (login/Dashboard esqueleto criados)
 
@@ -81,12 +81,23 @@ Use as caixas para marcar conclusão das tarefas. Ordem sugerida, podendo parale
 - [ ] Tabelas com filtros/paginação; uploads.
 - [ ] Kanban (oportunidades, migração); gráficos (recharts ou similar).
 
-## 14) Testes e Qualidade
+## 14) Alertas, Notificações e Auditoria
+- [ ] Registrar `LogAuditoria` em CRUD críticos.
+- [ ] Persistir `Notificacao` para: contrato a vencer, migração atrasada, exposição alta, falta de fatura.
+- [ ] Badge de alertas no topo do app interno.
+
+## 15) UI/UX e Componentes
+- [ ] Layout interno (sidebar/topbar), tema da gestora.
+- [ ] Formulários com `react-hook-form + zod` e componentes shadcn.
+- [ ] Tabelas com filtros/paginação; uploads.
+- [ ] Kanban (oportunidades, migração); gráficos (recharts ou similar).
+
+## 16) Testes e Qualidade
 - [ ] Backend: testes unit (serviços de cálculo) e integração (rotas principais).
 - [ ] Frontend: smoke tests de páginas/hooks críticos.
 - [ ] Lint/format no CI; checar paginação e validação em todas as listas.
 
-## 15) DevOps local
+## 17) DevOps local
 - [ ] Validar `docker-compose up` (MySQL + API).
 - [ ] Scripts `dev` (api+web), `build`, `lint`, `test`.
 - [ ] README com instruções de setup, env vars e comandos.
