@@ -1,5 +1,7 @@
 "use client";
 
+import { useMemo } from "react";
+import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, Legend } from "recharts";
 import { useExposicoes } from "../../../hooks/useExposicoes";
 
 const riscoBadge: Record<string, string> = {
@@ -10,6 +12,18 @@ const riscoBadge: Record<string, string> = {
 
 export default function ExposicoesPage() {
   const { data, isLoading, error } = useExposicoes();
+
+  const chartData = useMemo(() => {
+    if (!data) return [];
+    return data
+      .slice()
+      .sort((a, b) => a.competencia.localeCompare(b.competencia))
+      .map((item) => ({
+        competencia: item.competencia,
+        contratado: item.volumeContratadoMwh,
+        medido: item.volumeMedidoMwh
+      }));
+  }, [data]);
 
   return (
     <div className="space-y-6">
@@ -24,6 +38,25 @@ export default function ExposicoesPage() {
           Calcular exposição
         </button>
       </div>
+
+      {chartData.length > 0 && (
+        <div className="rounded-xl border border-slate-200 bg-white p-4">
+          <h2 className="text-sm font-semibold text-slate-900">Tendência mensal</h2>
+          <div className="mt-4 h-72">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={chartData}>
+                <XAxis dataKey="competencia" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Line type="monotone" dataKey="contratado" stroke="#0f172a" strokeWidth={2} />
+                <Line type="monotone" dataKey="medido" stroke="#0ea5e9" strokeWidth={2} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )}
+
       <div className="rounded-xl border border-slate-200 bg-white">
         <table className="min-w-full divide-y divide-slate-200 text-sm">
           <thead className="bg-slate-50">

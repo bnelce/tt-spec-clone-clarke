@@ -22,7 +22,9 @@ const createApi = (tokenKey: string) => ({
   post: <T>(path: string, body?: unknown) =>
     request<T>(path, { method: "POST", body: body ? JSON.stringify(body) : undefined }, tokenKey),
   put: <T>(path: string, body?: unknown) =>
-    request<T>(path, { method: "PUT", body: body ? JSON.stringify(body) : undefined }, tokenKey)
+    request<T>(path, { method: "PUT", body: body ? JSON.stringify(body) : undefined }, tokenKey),
+  patch: <T>(path: string, body?: unknown) =>
+    request<T>(path, { method: "PATCH", body: body ? JSON.stringify(body) : undefined }, tokenKey)
 });
 
 export const api = createApi("token");

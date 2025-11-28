@@ -15,6 +15,7 @@ import { exposicaoRoutes } from "./exposicoes";
 import { honorarioRoutes } from "./honorarios";
 import { portalRoutes } from "./portal";
 import { alertaRoutes } from "./alertas";
+import { oportunidadeEtapaRoutes } from "./oportunidade-etapas";
 
 export async function registerRoutes(app: FastifyInstance) {
   await app.register(authRoutes);
@@ -33,4 +34,5 @@ export async function registerRoutes(app: FastifyInstance) {
   await app.register(honorarioRoutes);
   await app.register(portalRoutes);
   await app.register(alertaRoutes);
+  await app.register(oportunidadeEtapaRoutes);
 }

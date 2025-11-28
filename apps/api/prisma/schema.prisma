@@ -47,6 +47,15 @@ model UsuarioInterno {
   status    StatusAtivo @default(ativo)
   criadoEm  DateTime    @default(now())
   atualizadoEm DateTime @updatedAt
+  leadAnotacoes   LeadAnotacao[]
+  oportunidades   Oportunidade[]        @relation("OportunidadeResponsavel")
+  historicos      OportunidadeHistorico[]
+  analisesCriadas AnaliseViabilidade[]
+  migracoes       Migracao[]            @relation("MigracaoResponsavel")
+  tarefasMigracao MigracaoTarefa[]      @relation("MigracaoTarefaResponsavel")
+  relatoriosHonorarioGerados RelatorioHonorario[]
+  notificacoesDestino Notificacao[]     @relation("NotificacaoDestino")
+  logsAuditoria   LogAuditoria[]
 }
 
 model UsuarioCliente {
@@ -136,7 +145,7 @@ model Oportunidade {
   cliente               Cliente?  @relation(fields: [clienteId], references: [id])
   clienteId             String?
   valorPotencial        Float?
-  responsavel           UsuarioInterno? @relation(fields: [responsavelId], references: [id])
+  responsavel           UsuarioInterno? @relation("OportunidadeResponsavel", fields: [responsavelId], references: [id])
   responsavelId         String?
   etapa                 OportunidadeEtapa @relation(fields: [etapaId], references: [id])
   etapaId               String
@@ -147,6 +156,7 @@ model Oportunidade {
   criadoEm              DateTime  @default(now())
   historico             OportunidadeHistorico[]
   propostas             PropostaEnergia[]
+  analises              AnaliseViabilidade[]
 }
 
 model OportunidadeHistorico {
@@ -182,6 +192,14 @@ model Cliente {
   medicoes       Medicao[]
   exposicoes     ExposicaoContratual[]
   honorarios     CalculoHonorario[]
+  oportunidades  Oportunidade[]
+  analises       AnaliseViabilidade[]
+  propostas      PropostaEnergia[]
+  migracoes      Migracao[]
+  relatoriosHonorario RelatorioHonorario[]
+  relatoriosPortal RelatorioPortal[]
+  documentosPortal DocumentoPortal[]
+  notificacoes   Notificacao[]
 }
 
 model ClienteArquivo {
@@ -212,7 +230,6 @@ model UC {
   arquivos               UCArquivo[]
   analises               AnaliseViabilidade[]
   migracoes              Migracao[]
-  contratos              ContratoEnergia[] @relation("ContratoUC")
   faturas                Fatura[]
   medicoes               Medicao[]
   exposicoes             ExposicaoContratual[]
@@ -345,7 +362,6 @@ model ContratoEnergia {
   observacoes        String?
   curvas             ContratoEnergiaCurvaMensal[]
   arquivos           ContratoEnergiaArquivo[]
-  migracoes          Migracao[]
   faturas            Fatura[]
   exposicoes         ExposicaoContratual[]
   createdAt          DateTime @default(now())
@@ -376,7 +392,7 @@ model Migracao {
   clienteId    String
   uc           UC       @relation(fields: [ucId], references: [id])
   ucId         String
-  responsavel  UsuarioInterno? @relation(fields: [responsavelId], references: [id])
+  responsavel  UsuarioInterno? @relation("MigracaoResponsavel", fields: [responsavelId], references: [id])
   responsavelId String?
   status       String   @default("em_andamento")
   criadoEm     DateTime @default(now())
@@ -394,6 +410,7 @@ model MigracaoEtapa {
   prazoPrevisto DateTime?
   status      String   @default("pendente")
   concluidoEm DateTime?
+  tarefas     MigracaoTarefa[]
 }
 
 model MigracaoTarefa {
@@ -404,7 +421,7 @@ model MigracaoTarefa {
   etapaId     String
   titulo      String
   descricao   String?
-  responsavel UsuarioInterno? @relation(fields: [responsavelId], references: [id])
+  responsavel UsuarioInterno? @relation("MigracaoTarefaResponsavel", fields: [responsavelId], references: [id])
   responsavelId String?
   prazo       DateTime?
   status      String   @default("pendente")
@@ -558,7 +575,7 @@ model Notificacao {
   tipoId      String
   referenciaEntidade String?
   referenciaId String?
-  usuarioDestino UsuarioInterno? @relation(fields: [usuarioDestinoId], references: [id])
+  usuarioDestino UsuarioInterno? @relation("NotificacaoDestino", fields: [usuarioDestinoId], references: [id])
   usuarioDestinoId String?
   cliente       Cliente? @relation(fields: [clienteId], references: [id])
   clienteId     String?

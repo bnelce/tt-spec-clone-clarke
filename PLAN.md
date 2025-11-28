@@ -28,15 +28,16 @@ Use as caixas para marcar conclusão das tarefas. Ordem sugerida, podendo parale
 - [x] Endpoints Oportunidades: criar/listar (kanban), mudar etapa, histórico.
 - [ ] Validações (Zod) conforme specs; paginação em listas (parcial: leads/clientes/ucs).
 - [x] Hooks/telas básicas para leads e oportunidades.
-- [x] Formulário de criação de leads (React Hook Form + Zod); [ ] formulários restantes + kanban completo.
+- [x] Formulários de criação (leads e oportunidades) + board com drag-and-drop (dnd-kit); [ ] edição completa e kanban com cartões detalhados/ordenação por coluna.
 
 ## 5) Vertical Slice 2 – Clientes & UCs
 - [x] Endpoints Clientes: CRUD, arquivos.
 - [x] Endpoints UCs: CRUD, import CSV (stub inicial).
 - [ ] Integrar com CRM (conversão de lead cria cliente).
-- [x] Hooks `useClientes`, `useUcs`; telas Next básicas. [ ] telas detalhadas/CRUD.
+- [x] Hooks `useClientes`, `useUcs`; telas Next básicas.
+- [x] Formulários de criação para clientes/UCs; [ ] telas detalhadas/edição.
 
-## 6) Vertical Slice 3 — Análise de Viabilidade
+## 6) Vertical Slice 3 – Análise de Viabilidade
 - [x] Endpoints: criar análise com dados mensais, calcular resultado (rotas `/analises`).
 - [ ] Upload/anexos de análise pendente.
 - [x] Serviço de cálculo (custo cativo vs livre, economia); payback opcional pendente.
@@ -58,7 +59,7 @@ Use as caixas para marcar conclusão das tarefas. Ordem sugerida, podendo parale
 - [x] Endpoints Faturas: CRUD + upload metadata.
 - [x] Endpoints Medições: CRUD.
 - [x] Endpoint Exposição: calcular e persistir.
-- [x] Hooks/telas básicas (`useFaturas`, `useMedicoes`, `useExposicoes`); [ ] gráficos analíticos e filtros avançados.
+- [x] Hooks/telas básicas (`useFaturas`, `useMedicoes`, `useExposicoes`) + gráfico Recharts; [ ] filtros avançados e dashboards adicionais.
 
 ## 10) Vertical Slice 7 – Honorários
 - [x] Endpoints Contratos de Gestão: CRUD.
@@ -95,7 +96,7 @@ Use as caixas para marcar conclusão das tarefas. Ordem sugerida, podendo parale
 - [ ] Kanban (oportunidades, migração); gráficos (recharts ou similar).
 
 ## 16) Testes e Qualidade
-- [ ] Backend: testes unit (serviços de cálculo) e integração (rotas principais).
+- [ ] Backend: testes unit (serviços de cálculo) e integração (rotas principais). (Vitest rodando contra MySQL local; ampliar cobertura).
 - [ ] Frontend: smoke tests de páginas/hooks críticos.
 - [ ] Lint/format no CI; checar paginação e validação em todas as listas.
 
