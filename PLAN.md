@@ -59,7 +59,7 @@ Use as caixas para marcar conclusão das tarefas. Ordem sugerida, podendo parale
 - [x] Endpoints Faturas: CRUD + upload metadata.
 - [x] Endpoints Medições: CRUD.
 - [x] Endpoint Exposição: calcular e persistir.
-- [x] Hooks/telas básicas (`useFaturas`, `useMedicoes`, `useExposicoes`) + gráfico Recharts; [ ] filtros avançados e dashboards adicionais.
+- [x] Hooks/telas básicas (`useFaturas`, `useMedicoes`, `useExposicoes`) + gráficos (barras/linhas) e filtros de tipo; [ ] dashboards adicionais e KPIs agregados.
 
 ## 10) Vertical Slice 7 – Honorários
 - [x] Endpoints Contratos de Gestão: CRUD.
@@ -96,7 +96,7 @@ Use as caixas para marcar conclusão das tarefas. Ordem sugerida, podendo parale
 - [ ] Kanban (oportunidades, migração); gráficos (recharts ou similar).
 
 ## 16) Testes e Qualidade
-- [ ] Backend: testes unit (serviços de cálculo) e integração (rotas principais). (Vitest rodando contra MySQL local; ampliar cobertura).
+- [ ] Backend: testes unit (serviços de cálculo) e integração (rotas principais). (Vitest rodando contra MySQL local; já há testes para serviços de exposição/viabilidade e oportunidades; ampliar cobertura restante).
 - [ ] Frontend: smoke tests de páginas/hooks críticos.
 - [ ] Lint/format no CI; checar paginação e validação em todas as listas.
 
